@@ -1,17 +1,19 @@
 // db.js
 const mongoose = require("mongoose");
 
-const connectDB = async () => {
+const uri = "mongodb+srv://dwivedinaveen34_db_user:6wHBVxHPGbfUZJeU@news.n2jeaby.mongodb.net/news?retryWrites=true&w=majority&appName=news";
+
+async function connectDB() {
   try {
-   const mongoose = require("mongoose");
-
-    mongoose.connect("mongodb://127.0.0.1:27017/mydb");
-
-    console.log("✅ MongoDB Connected...");
+    await mongoose.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("✅ Mongoose connected to MongoDB Atlas");
   } catch (err) {
-    console.error("❌ MongoDB connection error:", err.message);
-    process.exit(1); // Stop app if DB fails
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1); // exit if connection fails
   }
-};
+}
 
 module.exports = connectDB;

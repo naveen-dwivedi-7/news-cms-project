@@ -21,17 +21,16 @@ app.set('view engine', 'ejs');
 //Database Connection
 mongoose.connect(process.env.MONGODB_URI)
 
-app.get('/',(req, res)=>{
-    "Hello World"
-})
-// Routes
-// app.use('/admin',(req, res, next) =>{
-//   res.locals.layout ='admin/layout';
-//   next();
-// })
-// app.use('/admin', require('./routes/admin'));
 
-// app.use('/', require('./routes/frontend'));
+
+// Routes
+app.use('/admin',(req, res, next) =>{
+  res.locals.layout ='admin/layout';
+  next();
+})
+app.use('/admin', require('./routes/admin'));
+
+app.use('/', require('./routes/frontend'));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
