@@ -1,38 +1,41 @@
-const express = require('express');
+// app.js
+const express = require("express");
+const path = require("path");
+const expressLayouts = require("express-ejs-layouts");
+require("dotenv").config();
+
+const connectDB = require("./config/db"); // ✅ use db.js instead of inline mongoose
+// const userRoutes = require("./routes/userRoutes"); // ✅ your MVC routes
+
 const app = express();
-const mongoose = require('mongoose');
-const path = require('path');
-const expressLayouts = require('express-ejs-layouts');
-// const cookieParser = require('cookie-parser');
-// const flash = require('connect-flash');
-require('dotenv').config();
 
 // Middleware
-// app.use(express.json({limit: '10mb'}));
-// app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
-// app.use(cookieParser());
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true })); // for form submissions
+app.use(express.static(path.join(__dirname, "public")));
 app.use(expressLayouts);
-app.set('layout','layout')
+app.set("layout", "layout");
 
 // View Engine
-app.set('view engine', 'ejs');
+app.set("view engine", "ejs");
 
-//Database Connection
-mongoose.connect(process.env.MONGODB_URI)
-
-
+// Database Connection
+connectDB(); // ✅ connects once when app starts
 
 // Routes
-app.use('/admin',(req, res, next) =>{
-  res.locals.layout ='admin/layout';
-  next();
-})
-app.use('/admin', require('./routes/admin'));
+// app.use("/api/users", userRoutes); // ✅ MVC user routes (register, login, get users)
 
-app.use('/', require('./routes/frontend'));
+// Admin routes (with admin layout)
+app.use("/admin", (req, res, next) => {
+  res.locals.layout = "admin/layout";
+  next();
+});
+app.use("/admin", require("./routes/admin"));
+
+// Frontend routes
+app.use("/", require("./routes/frontend"));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+  console.log(`🚀 Server is running on http://localhost:${port}`);
 });
