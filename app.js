@@ -2,6 +2,8 @@
 const express = require("express");
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
+const cookieParser=require('cookie-parser');
+const flash=require('connect-flash');
 require("dotenv").config();
 
 const connectDB = require("./config/db"); // ✅ use db.js instead of inline mongoose
@@ -14,6 +16,7 @@ app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for form submissions
 app.use(express.static(path.join(__dirname, "public")));
 app.use(expressLayouts);
+app.use(cookieParser());
 app.set("layout", "layout");
 
 // View Engine
