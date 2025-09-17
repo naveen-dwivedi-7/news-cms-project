@@ -1,4 +1,5 @@
 const categoryModel = require('../models/Category');
+const createError = require('../utils/error-message')
 
 
 const allCategory = async (req,res) => { 
@@ -22,7 +23,9 @@ const addCategory = async (req,res) => {
     await categoryModel.create(req.body)
     res.redirect('/admin/category');
   } catch (error) {
-    res.status(500).send(error);
+    // res.status(500).send(error);
+        next(error)
+
   }
 }
 
@@ -36,7 +39,7 @@ const updateCategoryPage = async (req,res,next) => {
     res.render('admin/categories/update', { category, role: req.role, errors: 0 })
   } catch (error) {
     res.status(400).send(error);
-    // next(error)
+    next(error)
   }
 }
 
@@ -64,8 +67,8 @@ const updateCategory = async (req,res,next) => {
     await category.save();
     res.redirect('/admin/category');
   } catch (error) {
-    res.status(400).send(error);
-    //next(error)
+    // res.status(400).send(error);
+    next(error)
   }
  }
 
@@ -85,8 +88,8 @@ const deleteCategory = async (req,res,next) => {
     // await category.deleteOne();
     res.json({ success: true });
   } catch (error) {
-    res.status(400).send(error);
-    //next(error)
+    // res.status(400).send(error);
+    next(error)
   }
  }
 

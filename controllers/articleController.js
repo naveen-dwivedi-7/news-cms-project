@@ -3,6 +3,8 @@ const newsModel = require('../models/News');
 const userModel = require('../models/User');
 const fs = require('fs')
 const path = require('path')
+const createError = require('../utils/error-message');
+
 
 const allArticle = async (req, res, next) => {
   try {
@@ -18,9 +20,9 @@ const allArticle = async (req, res, next) => {
     }
     res.render('admin/articles', { role: req.role, articles });
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Server Error');
-    // next(error)
+    // console.error(error);
+    // res.status(500).send('Server Error');
+    next(error)
   }
 }
 
@@ -47,9 +49,9 @@ const addArticle = async (req, res, next) => {
 
     res.redirect('/admin/article');
   } catch (error) {
-    console.log(error);
-    res.status(500).send('Article not saved');
-    //next(error)
+    // console.log(error);
+    // res.status(500).send('Article not saved');
+    next(error)
   }
 }
 
@@ -73,9 +75,9 @@ const updateArticlePage = async (req, res, next) => {
     const categories = await categoryModel.find();
     res.render('admin/articles/update', { role: req.role, article, categories, errors: 0 });
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Server Error');
-    //next(error)
+    // console.error(error);
+    // res.status(500).send('Server Error');
+    next(error)
   }
 }
 const updateArticle = async (req, res, next) => {

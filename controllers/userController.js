@@ -4,6 +4,10 @@ const jwt = require('jsonwebtoken');
 const createError = require("http-errors");
 const newsModel = require('../models/News');
 const categoryModel = require('../models/Category');
+const settingModel = require('../models/Setting');
+const fs = require('fs')
+
+
 // Render login page
 const loginPage = async (req, res) => {
   res.render('admin/login', { layout: false });
@@ -17,14 +21,12 @@ const adminLogin = async (req, res, next) => {
     // 1️⃣ Find user
     const user = await userModel.findOne({ username });
     if (!user) {
-      return res.status(401).send("Invalid username or password");
-    }
+        return next(createError('Invalid username or password', 401));    }
 
     // 2️⃣ Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).send("Invalid username or password");
-    }
+        return next(createError('Invalid username or password', 401));    }
 
     // 3️⃣ Generate JWT token
     const token = jwt.sign(
@@ -82,9 +84,47 @@ const dashboard = async (req, res) => {
 
 // Settings page
 const settings = async (req, res) => {
-  res.render("admin/settings");
+try {
+    const settings = await settingModel.findOne() || {};
+// res.render("admin/settings", { role: req.role, settings });
+    res.render('admin/settings', { role: req.role , settings})
+  } catch (error) {
+    console.error(error)
+  }
 };
 
+
+ const saveSettings = async (req, res, next) => {
+   const { website_title, footer_description } = req.body;
+  const website_logo = req.file?.filename;
+
+  try {
+    let setting = await settingModel.findOne();
+    if(!setting){
+      setting = new settingModel();
+    }
+    setting.website_title = website_title;
+    setting.footer_description = footer_description;
+
+    if(website_logo){
+      if(setting.website_logo){
+        const logoPath = `./public/uploads/${setting.website_logo}`;
+        if (fs.existsSync(logoPath)) {
+          fs.unlinkSync(logoPath);
+        }
+      }
+      setting.website_logo = website_logo;
+    }
+
+    await setting.save();
+    res.redirect('/admin/settings');
+  } catch (error) {
+    console.error(error)
+    // res.status(500).send('Internal Server Error');
+    next(error);
+
+  }
+}
 // List all users
 const allUser = async (req, res) => {
   const users = await userModel.find();
@@ -118,12 +158,13 @@ const updateUserPage = async (req, res) => {
   try {
     const user = await userModel.findById(id);
     if (!user) {
-      return res.status(404).send('User Not Found');
+        return next(createError('User not found', 404));
     }
     res.render('admin/users/update', { user, role: req.role });
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+    // res.status(500).send('Internal Server Error');
+    next(error);
+
   }
 };
 
@@ -151,7 +192,9 @@ const updateUser = async (req, res, next) => {
     res.redirect('/admin/users');
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+     // res.status(500).send('Internal Server Error');
+    next(error);
+
   }
 };
 
@@ -165,8 +208,9 @@ const deleteUser = async (req, res, next) => {
     }
     res.json({ success: true });
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+    // res.status(500).send('Internal Server Error');
+    next(error);
+
   }
 };
 
@@ -181,5 +225,6 @@ module.exports = {
   updateUserPage,
   updateUser,
   deleteUser,
-  settings
+  settings,
+  saveSettings
 };
