@@ -218,17 +218,22 @@ const updateUser = async (req, res, next) => {
 
 // Delete user
 const deleteUser = async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.params.id
   try {
-    const user = await userModel.findByIdAndDelete(id);
-    if (!user) {
-      return next(createError(404, 'User not found'));
+    const user = await userModel.findById(id)
+    if(!user){
+      return next(createError('User not found', 404));
     }
-    res.json({ success: true });
-  } catch (error) {
-    // res.status(500).send('Internal Server Error');
-    next(error);
 
+     const article = await newsModel.findOne({ author: id });
+    if (article) {
+      return res.status(400).json({ success: false, message: 'User is associated with an article' });
+    }
+
+    await user.deleteOne()
+    res.json({success:true})
+  } catch (error) {
+    next(error)
   }
 };
 
