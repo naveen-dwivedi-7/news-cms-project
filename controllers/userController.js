@@ -2,7 +2,8 @@ const userModel = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const createError = require("http-errors");
-
+const newsModel = require('../models/News');
+const categoryModel = require('../models/Category');
 // Render login page
 const loginPage = async (req, res) => {
   res.render('admin/login', { layout: false });
@@ -54,7 +55,29 @@ const logout = async (req, res) => {
 
 // Dashboard
 const dashboard = async (req, res) => {
-  res.render('admin/dashboard', { role: req.role });
+  try {
+    let articleCount;
+    if (req.role == 'author') {
+      articleCount = await newsModel.countDocuments({ author: req.id });
+    } else {
+      articleCount = await newsModel.countDocuments();
+    }
+
+    const categoryCount = await categoryModel.countDocuments();
+    const userCount = await userModel.countDocuments();
+
+    res.render('admin/dashboard', {
+      role: req.role,
+      fullname: req.fullname,
+      articleCount,
+      categoryCount,
+      userCount
+    });
+  } catch (error) {
+    console.error(error)
+    res.status(500).send('Internal Server Error');
+
+  }
 };
 
 // Settings page
@@ -65,12 +88,12 @@ const settings = async (req, res) => {
 // List all users
 const allUser = async (req, res) => {
   const users = await userModel.find();
-  res.render('admin/users', { users, role: req.role});
+  res.render('admin/users', { users, role: req.role });
 };
 
 // Add user page
 const addUserPage = async (req, res) => {
-  res.render('admin/users/create', {role: req.role });
+  res.render('admin/users/create', { role: req.role });
 };
 
 // Create user
