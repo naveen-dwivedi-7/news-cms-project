@@ -32,4 +32,4 @@ const newsSchema = new mongoose.Schema({
 
 newsSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.model('News', newsSchema);
+module.exports = mongoose.model('Article', newsSchema);

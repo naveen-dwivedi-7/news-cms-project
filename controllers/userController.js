@@ -54,23 +54,23 @@ const logout = async (req, res) => {
 
 // Dashboard
 const dashboard = async (req, res) => {
-  res.render('admin/dashboard', { role: req.user?.role });
+  res.render('admin/dashboard', { role: req.role });
 };
 
 // Settings page
 const settings = async (req, res) => {
-  res.render("admin/settings", { role: req.user?.role });
+  res.render("admin/settings");
 };
 
 // List all users
 const allUser = async (req, res) => {
   const users = await userModel.find();
-  res.render('admin/users', { users, role: req.user?.role });
+  res.render('admin/users', { users, role: req.role});
 };
 
 // Add user page
 const addUserPage = async (req, res) => {
-  res.render('admin/users/create', { role: req.user?.role });
+  res.render('admin/users/create', {role: req.role });
 };
 
 // Create user
@@ -97,7 +97,7 @@ const updateUserPage = async (req, res) => {
     if (!user) {
       return res.status(404).send('User Not Found');
     }
-    res.render('admin/users/update', { user, role: req.user?.role });
+    res.render('admin/users/update', { user, role: req.role });
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');

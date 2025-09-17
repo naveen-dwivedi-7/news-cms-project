@@ -2,6 +2,8 @@ const  express=require('express')
 const router=express.Router();
 const isLoggedIn = require('../middlewares/isLoggedin');
 const isAdmin = require('../middlewares/isAdmin');
+const upload = require('../middlewares/multer');
+
 
 
 
@@ -48,9 +50,9 @@ router.delete('/delete-category/:id', isLoggedIn, isAdmin,categoryController.del
 
 router.get('/article',isLoggedIn,articleController.allArticle);
 router.get('/add-article',isLoggedIn,articleController.addArticlePage);
-router.post('/add-article',isLoggedIn,articleController.allArticle);
+router.post('/add-article',isLoggedIn,upload.single('image'),articleController.allArticle);
 router.get('/update-article/:id',isLoggedIn,articleController.updateArticlePage);
-router.post('/update-article/:id',isLoggedIn,articleController.updateArticle);
+router.post('/update-article/:id',isLoggedIn,upload.single('image'),articleController.updateArticle);
 router.delete('/delete-article/:id',isLoggedIn, articleController.deleteArticle);
 
 //Comment Route

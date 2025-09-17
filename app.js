@@ -18,6 +18,11 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(expressLayouts);
 app.use(cookieParser());
 app.set("layout", "layout");
+// after you set up sessions / authentication middleware
+// app.use((req, res, next) => {
+//   res.locals.user = req.user || null; // available in all EJS templates
+//   next();
+// });
 
 // View Engine
 app.set("view engine", "ejs");
@@ -33,6 +38,12 @@ app.use("/admin", (req, res, next) => {
   res.locals.layout = "admin/layout";
   next();
 });
+// Make logged-in user available in all EJS templates
+// app.use((req, res, next) => {
+//   res.locals.user = req.session.user || null; // or req.user if using Passport
+//   next();
+// });
+
 app.use("/admin", require("./routes/admin"));
 
 // Frontend routes
