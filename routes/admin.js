@@ -50,7 +50,7 @@ router.delete('/delete-category/:id', isLoggedIn, isAdmin,categoryController.del
 
 router.get('/article',isLoggedIn,articleController.allArticle);
 router.get('/add-article',isLoggedIn,articleController.addArticlePage);
-router.post('/add-article',isLoggedIn,upload.single('image'),articleController.allArticle);
+router.post('/add-article',isLoggedIn,upload.single('image'),articleController.addArticle);
 router.get('/update-article/:id',isLoggedIn,articleController.updateArticlePage);
 router.post('/update-article/:id',isLoggedIn,upload.single('image'),articleController.updateArticle);
 router.delete('/delete-article/:id',isLoggedIn, articleController.deleteArticle);

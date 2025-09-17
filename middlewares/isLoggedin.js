@@ -9,7 +9,7 @@ const isLoggedIn = async (req, res, next) => {
 
     req.role = tokenData.role;
     req.fullname = tokenData.fullname;
-
+    req.id = tokenData.id;
     // Make role available in all EJS templates
     res.locals.role = req.role;
     res.locals.fullname = req.fullname;
