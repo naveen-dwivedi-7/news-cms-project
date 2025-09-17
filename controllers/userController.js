@@ -6,15 +6,27 @@ const newsModel = require('../models/News');
 const categoryModel = require('../models/Category');
 const settingModel = require('../models/Setting');
 const fs = require('fs')
+const { validationResult } = require('express-validator')
 
 
 // Render login page
 const loginPage = async (req, res) => {
-  res.render('admin/login', { layout: false });
+  res.render('admin/login',{
+    layout: false,
+    errors: 0
+  })
 };
 
 // Handle login
 const adminLogin = async (req, res, next) => {
+   const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // return res.status(400).json({ errors: errors.array() });
+    return res.render('admin/login',{
+      layout: false,
+      errors: errors.array()
+    })
+  }
   const { username, password } = req.body;
 
   try {
@@ -133,23 +145,20 @@ const allUser = async (req, res) => {
 
 // Add user page
 const addUserPage = async (req, res) => {
-  res.render('admin/users/create', { role: req.role });
+  res.render('admin/users/create' , { role: req.role, errors: 0 })
 };
 
 // Create user
 const addUser = async (req, res) => {
-  const { fullname, username, password, role } = req.body;
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  await userModel.create({
-    fullname,
-    username,
-    password: hashedPassword,
-    role,
-  });
-
-  res.redirect('/admin/users');
+  const errors = validationResult(req); 
+   if (!errors.isEmpty()) {
+    return res.render('admin/users/create',{
+      role: req.role,
+      errors: errors.array()
+    })
+  }
+  await userModel.create(req.body)
+  res.redirect('/admin/users')
 };
 
 // Edit user page
@@ -160,7 +169,7 @@ const updateUserPage = async (req, res) => {
     if (!user) {
         return next(createError('User not found', 404));
     }
-    res.render('admin/users/update', { user, role: req.role });
+    res.render('admin/users/update', { user , role:req.role, errors:0 })
   } catch (error) {
     // res.status(500).send('Internal Server Error');
     next(error);
@@ -171,6 +180,15 @@ const updateUserPage = async (req, res) => {
 // Update user
 const updateUser = async (req, res, next) => {
   const id = req.params.id;
+
+   const errors = validationResult(req); 
+   if (!errors.isEmpty()) {
+    return res.render('admin/users/update',{
+      user:req.body,
+      role: req.role,
+      errors: errors.array()
+    })
+  }
   const { fullname, password, role } = req.body;
 
   try {
